@@ -1,0 +1,18 @@
+FROM  python:3.13-slim
+
+
+
+WORKDIR /lyrics-server
+
+
+COPY . /lyrics-server
+
+
+RUN pip install -r /lyrics-server/requirements/req.txt
+
+
+RUN pip install gunicorn gevent
+
+EXPOSE 2302
+
+CMD ["gunicorn" ,  "-w" ,  "3" , "-k"  ,  "gevent" ,  "-b" ,  "0.0.0.0:2302" ,  "sangeet_lyrics_server:app"]
