@@ -6,7 +6,7 @@
 
 ---
 
-<img src="https://github.com/sangeet-premium/sangeet-premium-v5/releases/download/sangeet-asset-list/sangeet-premium-v5-logo.png" alt="Sangeet Logo" width="500" height="500" style="border-radius:30px;">
+<img src="https://github.com/sangeet-premium/sangeet-premium-v5/releases/download/sole-assets/sangeet-premium-v5-logo.png" alt="Sangeet Logo" width="500" height="500" style="border-radius:30px;">
 
 ---
 
@@ -505,18 +505,11 @@ docker compose -f sangeet-services.yaml up -d
 <details>
 <summary><strong>🎛️ Configuration Options</strong></summary>
 
-```bash
-# Custom port mapping
-export SANGEET_PORT=8080
-docker compose -f sangeet-services.yaml up
+### route to /add-data to edit config make sure to change admin pass and add all other needed values 
 
-# Custom music directory
-export MUSIC_DIR=/path/to/your/music
-docker compose -f sangeet-services.yaml up
+#### default admin password is sangeet
 
-# Development mode with hot reload
-docker compose -f sangeet-services.yaml -f docker-compose.dev.yml up
-```
+### an automatic cloudflared tunnel will be generated if set the tunnel:false if you have your own cloudflared config then set as true and edit the config.yaml and music_server.json the got tunnel will be there in tunnel.txt all there in cloudflared folder
 
 </details>
 
@@ -561,7 +554,7 @@ docker compose -f sangeet-services.yaml build --no-cache
 
 | Step | Action | URL | Description |
 |:---:|--------|-----|-------------|
-| **1** | **Access Application** | [`http://localhost:3400`](http://localhost:3400) | Main interface |
+| **1** | **Access Application** | [`http://localhost:3401`](http://localhost:3401) | Main interface (local) for https :3400|
 
 </div>
 
