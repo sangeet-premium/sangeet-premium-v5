@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Email Not Supported</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background: #fff;
+    max-width: 600px;
+    width: 90%;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    text-align: center;
+  }
+  svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    fill: #e74c3c;
+  }
+  h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 0;
+  }
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.4rem;
+    }
+    p {
+      font-size: 1rem;
+    }
+    svg {
+      width: 60px;
+      height: 60px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="10" stroke="#e74c3c" stroke-width="2" fill="none" />
+      <line x1="8" y1="8" x2="16" y2="16" stroke="#e74c3c" stroke-width="2" />
+      <line x1="16" y1="8" x2="8" y2="16" stroke="#e74c3c" stroke-width="2" />
+    </svg>
+    <h1>Email Not Supported</h1>
+    <p>We're sorry, but your email could not be sent due to an unsupported format or a backend issue.</p>
+  </div>
+</body>
+</html>

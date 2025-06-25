@@ -1,0 +1,23 @@
+
+services:
+  redis:
+    image: redis:7.2-alpine # Using a recent Alpine version for smaller size
+    container_name: my_redis_celery
+    ports:
+      - "6379:6379"
+    command:
+      - redis-server
+      - --save
+      - ""                     # Pass an empty string argument for disabling RDB
+      - --appendonly
+      - "no"                   # Disable AOF persistence
+      - --maxmemory
+      - "256mb"                # Set maximum memory usage
+      - --maxmemory-policy
+      - "allkeys-lru"          # Eviction policy when maxmemory is reached
+    volumes:
+      - ./database_data/redis:/data     # Mounts a local directory './redis_data' into the container
+                               # This directory will be created on your host if it doesn't exist.
+    restart: unless-stopped
+
+# Note: You don't need a top-level 'volumes:' declaration for bind mounts like './redis_data:/data'

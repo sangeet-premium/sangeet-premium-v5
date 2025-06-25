@@ -1,0 +1,26 @@
+FROM  python:3.13-slim
+
+
+
+WORKDIR /sangeet-v4
+
+
+
+COPY . /sangeet-v4
+
+
+RUN pip install -r requirements/req.txt
+
+
+
+RUN pip install gunicorn gevent
+
+
+RUN apt update && apt upgrade -y && \
+    apt install ffmpeg -y 
+
+EXPOSE 80  2300  2301
+
+
+CMD ["python3" , "/sangeet-v4/start_servers.py"]
+

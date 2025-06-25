@@ -1,0 +1,13 @@
+services:
+  postgres_db_ui: # New PostgreSQL service
+    image: postgres:15-alpine # Using version 15 alpine
+    container_name: sangeet_postgres
+    environment:
+      POSTGRES_USER: sangeet_premium_plus_ui # Use from .env or default
+      POSTGRES_PASSWORD: Sangeet-premium-plus-ui-strong-api-password # Use from .env or default
+      POSTGRES_DB: sangeet-ui   # Use from .env or default
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data # Use a named volume for PostgreSQL data
+    ports:
+      - "5434:5432" # Expose PostgreSQL port if you need to connect from host
+    restart: always
