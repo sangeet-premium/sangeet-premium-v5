@@ -1,0 +1,15 @@
+tunnel: tunnel name
+credentials-file: /home/nonroot/.cloudflared/music_server.json
+
+ingress:
+  - hostname: your domain
+    service: https://localhost:3400
+    # --- Add this block ---
+    originRequest:
+      # This tells cloudflared to attempt an HTTP/2 connection 
+      # to your nginx container.
+      http2Origin: true
+      noTLSVerify: true
+  
+  # This is your required catch-all rule
+  - service: http_status:404

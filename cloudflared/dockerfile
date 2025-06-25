@@ -1,0 +1,32 @@
+# Use a standard Alpine image as the base
+FROM alpine:3.18
+
+# Install required tools: wget to download files and ca-certificates for HTTPS.
+# Added bash and grep for the script.
+RUN apk add --no-cache wget ca-certificates bash grep
+
+# This block automatically detects the CPU architecture, downloads the
+# correct cloudflared binary, and makes it executable.
+RUN ARCH=$(uname -m) && \
+    case $ARCH in \
+        x86_64) ARCH_SUFFIX="amd64" ;; \
+        aarch64) ARCH_SUFFIX="arm64" ;; \
+        *) echo "Unsupported architecture: $ARCH"; exit 1 ;; \
+    esac && \
+    wget "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH_SUFFIX}" -O /usr/local/bin/cloudflared && \
+    chmod +x /usr/local/bin/cloudflared
+
+# Re-create the 'nonroot' user to match the official image's environment
+RUN addgroup -g 1000 nonroot && \
+    adduser -u 1000 -G nonroot -D -h /home/nonroot nonroot
+
+# --- CHANGE: Copy the script from the build context instead of creating it with echo ---
+# This assumes 'start-tunnel.sh' is in the same directory as this Dockerfile
+COPY start-tunnel.sh /start-tunnel.sh
+
+# Make the script executable
+RUN chmod +x /start-tunnel.sh
+
+
+# Set the entrypoint to run the script
+ENTRYPOINT ["/start-tunnel.sh"]

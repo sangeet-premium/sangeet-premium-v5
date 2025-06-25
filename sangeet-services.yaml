@@ -1,0 +1,134 @@
+services:
+  postgres_main_database_server:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: sangeet_premium_plus_ui
+      POSTGRES_PASSWORD: Sangeet-premium-plus-ui-strong-api-password
+      POSTGRES_DB: sangeet-ui
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # Host port:Container port
+    networks:
+      - sangeet-v4
+    restart: always
+    healthcheck: # Added healthcheck
+      test: ["CMD-SHELL", "pg_isready -U sangeet_premium_plus_ui -d sangeet-ui -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s # Give it some time to start before first healthcheck
+
+  sangeet_lyrics_server:
+    build:
+      context: ./microservices/lyrics-server
+      dockerfile: dockerfile
+    ports:
+      - "2302:2302"
+    volumes:
+      - ./microservices/lyrics-server:/lyrics-server
+    networks:
+      - sangeet-v4
+    depends_on: # Modified depends_on
+      postgres_main_database_server:
+        condition: service_healthy # Wait for healthcheck to pass
+    restart: always
+    # It's good practice to also pass DB connection details as environment variables here
+    # if sangeet_lyrics_server is configured to read them (which it is via config.conf)
+    # For clarity, ensure its config.conf has:
+    # POSTGRES_HOST=postgres_main_database_server
+    # POSTGRES_PORT=5432
+  redis-celery:
+    image: redis:7.2-alpine # Using a recent Alpine version for smaller size
+    container_name: my_redis_celery
+    ports:
+      - "6379:6379"
+    command:
+      - redis-server
+      - --save
+      - ""                     # Pass an empty string argument for disabling RDB
+      - --appendonly
+      - "no"                   # Disable AOF persistence
+      - --maxmemory
+      - "256mb"                # Set maximum memory usage
+      - --maxmemory-policy
+      - "allkeys-lru"          # Eviction policy when maxmemory is reached
+    volumes:
+      - ./database_data/redis:/data     # Mounts a local directory './redis_data' into the container
+                               # This directory will be created on your host if it doesn't exist.
+    restart: unless-stopped
+    networks:
+      - sangeet-v4
+
+  sangeet_ui_server:
+    build:
+      context: ./microservices/sangeet_ui
+      dockerfile: dockerfile
+    restart: always
+    ports:
+      - "80:80"
+      - "2300:2300"
+      - "2301:2301"
+    networks:
+      - sangeet-v4
+    volumes:
+      # --- Start of Change ---
+      # Mount the entire application source directory to /sangeet-v4 in the container.
+      # This single line replaces all the individual file and subdirectory mounts
+      # for your application code from ./microservices/sangeet_ui.
+      - ./microservices/sangeet_ui:/sangeet-v4
+      # --- End of Change ---
+
+      # Keep your existing mounts for external data (songs, etc.)
+      - ./sangeet_songs:/sangeet-v4/sangeet_songs
+      - ./microservices/sangeet_ui/local_songs:/sangeet-v4/local_songs
+    depends_on: # Modified depends_on
+      postgres_main_database_server:
+        condition: service_healthy # Wait for healthcheck to pass
+    
+
+  nginx_reverse_proxy:
+    image: nginx:latest
+    ports:
+      - "0.0.0.0:3400:8080"
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:3401:80"
+    volumes:
+      - ./nginx-config/sangeet-nginx.conf:/etc/nginx/nginx.conf:ro
+      # - ./nginx-config/cert.pem:/etc/nginx/ssl/cert.pem:ro
+      # - ./nginx-config/key.pem:/etc/nginx/ssl/key.pem:ro
+      - ./nginx-config/generate-certs.sh:/docker-entrypoint.d/10-generate-certs.sh:ro
+    networks:
+      - sangeet-v4
+    restart: always
+    depends_on:
+      sangeet_ui_server:
+        condition: service_started
+      sangeet_lyrics_server:
+        condition: service_started
+    healthcheck:
+      # Use https:// and add the -k flag for the self-signed certificate
+      test: ["CMD-SHELL", "curl -f -k https://localhost:8080/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  cloudflared:
+    build:
+      context: ./cloudflared 
+      dockerfile: dockerfile
+    network_mode: "host"
+    container_name: cloudflared_tunnel
+    restart: always
+    # networks:
+    #   - sangeet-v4
+    depends_on:
+      nginx_reverse_proxy:
+        condition: service_healthy
+    volumes:
+      - ./cloudflared:/home/nonroot/.cloudflared 
+     
+    
+networks:
+  sangeet-v4:
+    driver: bridge

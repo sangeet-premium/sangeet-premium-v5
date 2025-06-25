@@ -1,0 +1,17 @@
+syncedlyrics==1.0.1
+ytmusicapi==1.10.3
+flask==3.1.0
+flask-cors==6.0.0
+python-dotenv==1.1.0
+Flask-SQLAlchemy==3.1.1
+psycopg2-binary==2.9.10
+bcrypt==4.2.0
+spotipy==2.25.1
+mutagen==1.47.0
+beautifulsoup4==4.13.3
+pytz==2025.2
+thefuzz==0.22.1
+google-cloud-aiplatform==1.71.1
+google-auth==2.40.0
+yt-dlp
+watchdog==6.0.0

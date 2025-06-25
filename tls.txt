@@ -1,0 +1,1 @@
+chmod +x ./nginx-config/generate-certs.sh
