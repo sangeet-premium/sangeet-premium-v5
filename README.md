@@ -6,7 +6,7 @@
 
 ---
 
-<img src="https://github.com/sangeet-premium/sangeet-premium-v5/releases/download/sole-assets/sangeet-premium-v5-logo.png" alt="Sangeet Logo" width="500" height="500" style="border-radius:30px;">
+<img src="https://github.com/sangeet-premium/sangeet-premium-v5/releases/download/sangeet-asset-list/sangeet-premium-v5-logo.png" alt="Sangeet Logo" width="500" height="500" style="border-radius:30px;">
 
 ---
 
